@@ -1,0 +1,2 @@
+2025-02-10 15:28:06,100 - INFO - Audit for model 'AI_Model_X': DI = 0.500, DP Diff = 0.333, EO Diff = 0.500. Status: FAIL.
+2025-02-10 15:28:06,100 - INFO - Notification: ALERT: Audit for model 'AI_Model_X' failed. Details: Disparate Impact (0.500) is below minimum threshold (0.85). Demographic Parity Diff (0.333) is above maximum threshold (0.15). Equal Opportunity Diff (0.500) is above maximum threshold (0.15).

@@ -16,7 +16,7 @@ jobs:
         run: |
           echo "${{ secrets.GCP_SA_KEY }}" | base64 --decode > key.json
           gcloud auth activate-service-account --key-file=key.json
-          gcloud config set project YOUR_PROJECT_ID
+          gcloud config set project ai-auditor-450522
 
       - name: Build and push Docker image
         run: |

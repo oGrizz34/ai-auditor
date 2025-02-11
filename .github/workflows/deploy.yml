@@ -14,10 +14,14 @@ jobs:
 
       - name: Authenticate with Google Cloud
         run: |
-          printf '%s' "${{ secrets.GCP_SA_KEY }}" > key.json
-          ls -l key.json  # Debug step: Check file size; should be non-zero
+          # Decode the base64 encoded key and write to key.json
+          echo "${{ secrets.GCP_SA_KEY }}" | base64 --decode > key.json
+          # Debug: Print the first few lines of key.json to ensure it looks like valid JSON.
+          head -n 10 key.json
+          # Authenticate with Google Cloud using the key
           gcloud auth activate-service-account --key-file=key.json
-          gcloud config set project ai-auditor-450522
+          gcloud config set project YOUR_PROJECT_ID
+      
       
       
       

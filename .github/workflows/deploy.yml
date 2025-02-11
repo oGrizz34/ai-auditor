@@ -20,7 +20,7 @@ jobs:
           head -n 10 key.json
           # Authenticate with Google Cloud using the key
           gcloud auth activate-service-account --key-file=key.json
-          gcloud config set project YOUR_PROJECT_ID
+          gcloud config set project ai-auditor-450522
       
       
       

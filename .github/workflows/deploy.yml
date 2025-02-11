@@ -14,9 +14,13 @@ jobs:
 
       - name: Authenticate with Google Cloud
         run: |
-          printf "${{ secrets.GCP_SA_KEY }}" | > key.json
+          # Write the secret to key.json using printf to preserve newlines
+          printf '%s' "${{ secrets.GCP_SA_KEY }}" > key.json
+          ls -l key.json  # Debug step: prints file size to ensure it's non-zero
           gcloud auth activate-service-account --key-file=key.json
-          gcloud config set project ai-auditor-450522
+          gcloud config set project YOUR_PROJECT_ID
+      
+      
 
       - name: Build and push Docker image
         run: |

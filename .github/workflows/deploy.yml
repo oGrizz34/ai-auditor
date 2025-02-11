@@ -3,34 +3,42 @@ name: Deploy to Google Cloud Run
 on:
   push:
     branches:
-      - main  # Deploy when changes are pushed to "main"
+      - main  # Deploys when code is pushed to the main branch
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
+      # Step 1: Check out the repository
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Authenticate with Google Cloud
-        run: |
-          # Decode the base64 encoded key and write to key.json
-          echo "${{ secrets.GCP_SA_KEY }}" | base64 --decode > key.json
-          # Debug: Print the first few lines of key.json to ensure it looks like valid JSON.
-          head -n 10 key.json
-          # Authenticate with Google Cloud using the key
-          gcloud auth activate-service-account --key-file=key.json
-          gcloud config set project ai-auditor-450522
-      
-      
-      
-      
+      # Step 2: Set up Google Cloud SDK and authenticate using the service account key
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ai-auditor-450522
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
 
-      - name: Build and push Docker image
+      # Step 3: Build the Docker image
+      - name: Build Docker image
         run: |
-          docker build -t gcr.io/ai-auditor-450522/ai-auditor .
+          docker build --no-cache -t gcr.io/ai-auditor-450522/ai-auditor .
+
+      # Step 4: Push the Docker image to Google Container Registry (GCR)
+      - name: Push Docker image
+        run: |
           docker push gcr.io/ai-auditor-450522/ai-auditor
 
+      # Step 5: Deploy to Google Cloud Run
       - name: Deploy to Cloud Run
         run: |
-          gcloud run deploy ai-auditor --image gcr.io/ai-auditor-450522/ai-auditor --region us-central1 --platform managed --allow-unauthenticated
+          gcloud run deploy ai-auditor \
+            --image gcr.io/ai-auditor-450522/ai-auditor \
+            --region us-central1 \
+            --platform managed \
+            --allow-unauthenticated \
+            --port 8080 \
+            --timeout=300s
+

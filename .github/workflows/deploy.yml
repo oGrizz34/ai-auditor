@@ -14,24 +14,29 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Step 2: Set up Google Cloud SDK and authenticate
+      # Step 2: Set up Google Cloud SDK and authenticate using your service account key
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
         with:
           project_id: ai-auditor-450522
           service_account_key: ${{ secrets.GCP_SA_KEY }}
 
-      # Step 3: Build your Docker image (using --no-cache to force fresh build)
+      # Step 3: Configure Docker to authenticate to GCR
+      - name: Configure Docker for GCR
+        run: |
+          gcloud auth configure-docker gcr.io
+
+      # Step 4: Build your Docker image (using --no-cache to force a fresh build)
       - name: Build Docker image
         run: |
           docker build --no-cache -t gcr.io/ai-auditor-450522/ai-auditor .
 
-      # Step 4: Push the Docker image to Google Container Registry (GCR)
+      # Step 5: Push the Docker image to GCR
       - name: Push Docker image
         run: |
           docker push gcr.io/ai-auditor-450522/ai-auditor
 
-      # Step 5: Deploy to Cloud Run
+      # Step 6: Deploy to Google Cloud Run
       - name: Deploy to Cloud Run
         run: |
           gcloud run deploy ai-auditor \

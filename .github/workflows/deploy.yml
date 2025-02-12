@@ -3,7 +3,7 @@ name: Deploy to Google Cloud Run
 on:
   push:
     branches:
-      - main  # This workflow runs on pushes to the main branch
+      - main  # Trigger this workflow on pushes to the main branch
 
 jobs:
   deploy:
@@ -21,26 +21,23 @@ jobs:
           project_id: ai-auditor-450522
           service_account_key: ${{ secrets.GCP_SA_KEY }}
 
-      # Step 3: Configure Docker to authenticate to GCR
+      # Step 3: Configure Docker for Google Container Registry (GCR)
       - name: Configure Docker for GCR
-        run: |
-          gcloud auth configure-docker gcr.io
+        run: gcloud auth configure-docker gcr.io
 
       # Step 4: Build your Docker image (using --no-cache to force a fresh build)
       - name: Build Docker image
-        run: |
-          docker build --no-cache -t gcr.io/ai-auditor-450522/ai-auditor .
+        run: docker build --no-cache -t gcr.io/ai-auditor-450522/ai-auditor .
 
       # Step 5: Push the Docker image to GCR
       - name: Push Docker image
-        run: |
-          docker push gcr.io/ai-auditor-450522/ai-auditor
+        run: docker push gcr.io/ai-auditor-450522/ai-auditor:latest
 
-      # Step 6: Deploy to Google Cloud Run
+      # Step 6: Deploy to Cloud Run
       - name: Deploy to Cloud Run
         run: |
           gcloud run deploy ai-auditor \
-            --image gcr.io/ai-auditor-450522/ai-auditor \
+            --image gcr.io/ai-auditor-450522/ai-auditor:latest \
             --platform managed \
             --region us-central1 \
             --allow-unauthenticated \
